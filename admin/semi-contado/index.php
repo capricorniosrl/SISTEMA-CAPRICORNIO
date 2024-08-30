@@ -1,34 +1,60 @@
 <?php
-    include ('../../app/config/config.php');
-    include ('../../app/config/conexion.php');
+include('../../app/config/config.php');
+include('../../app/config/conexion.php');
+include('../../layout/admin/session.php');
+include('../../layout/admin/datos_session_user.php');
 
-    include ('../../layout/admin/session.php');
-    include ('../../layout/admin/datos_session_user.php');
+if (isset($_SESSION['busqueda_cierres'])) {
+  // echo "existe session y paso por el login";
+} else {
+  // echo "no existe session por que no ha pasado por el login";
+  header('Location:' . $URL . '/admin');
+}
+
+// Redireccionar después del envío del formulario para evitar reenvío
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  $buscar = $_POST['buscar'];
+
+  // Preparar la consulta
+  $stmt = $pdo->prepare('SELECT id_comprador, nombre_1, ap_paterno_1, ap_materno_1, ci_1, exp_1, urbanizacion, com.celular_1 as celular, lote, manzano FROM tb_comprador com INNER JOIN tb_semicontado semi ON semi.id_comprador_fk = com.id_comprador WHERE ci_1 = :buscar');
+  $stmt->bindParam(':buscar', $buscar);
+  $stmt->execute();
+
+  // Guardar los resultados en una variable de sesión
+  $_SESSION['resultados'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  // Redirigir al usuario para evitar reenvío del formulario
+  header('Location: ' . $_SERVER['PHP_SELF']);
+  exit();
+}
+
+// Mostrar los resultados si están disponibles en la sesión
+$results = isset($_SESSION['resultados']) ? $_SESSION['resultados'] : [];
+unset($_SESSION['resultados']);
 ?>
-<?php include ('../../layout/admin/parte1.php'); ?>
-<link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-/>
+<?php include('../../layout/admin/parte1.php'); ?>
 
-  <div class="content-wrapper">
+<div class="content-wrapper">
   <div class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-12">
-          <h1 class="m-0">BUSCAR AL CLIENTE POR EL CARNET DE INDETIDAD</h1>
+          <h1 class="m-0">BUSCAR AL CLIENTE POR EL CARNET DE IDENTIDAD</h1>
+          <center>
+            <h3>SEMICONTADO</h3>
+          </center>
         </div>
       </div>
       <section class="content">
         <div class="container">
           <div class="row justify-content-center">
             <div class="col-md-6">
-              <div class="card card-primary animate__animated animate__flipInX">
+              <div class="card card-primary animate_animated animate_flipInX">
                 <div class="card-body">
                   <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                     <div class="form-group">
                       <label for="buscar">INGRESE EL NRO. DE CARNET</label>
-                      <input class="form-control" type="number" id="buscar" name="buscar">
+                      <input class="form-control" type="number" id="buscar" name="buscar" required>
                     </div>
                     <input type="submit" value="Buscar" class="form-control">
                   </form>
@@ -41,181 +67,78 @@
     </div>
   </div>
 
-
   <div class="row justify-content-center">
-            <div class="col-md-12">
-              <div class="card card-primary animate__animated animate__flipInX">
-                <div class="card-body">
-  
+    <div class="col-md-12">
+      <div class="card card-primary animate_animated animate_flipInX">
+        <div class="card-body">
+          <style>
+            .table-responsive_1 {
+              width: 100%;
+              overflow-x: auto;
+            }
 
-              
-                <div class="table-responsive">
-                  <table class="table" id="example" class="display " style="width:100%">
-                    <thead>
-                      <tr>
-                        <th>Id_Comprador</th>
-                        <th>NOMBRES</th>
-                        <th>APELLIDO PATERNO</th>
-                        <th>APELLIDO MATERNO</th>
-                        <th>CI</th>
-                        <th>EXPEDIDO EN:</th>
-                        <th>CELULAR</th>
-                        <th>PAGOS</th>
-                      </tr>
-                    </thead>
-                    <?php
-                      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                      $buscar = $_POST['buscar'];
-                      // Conectamos a la base de datos
-                      $conn = new PDO('mysql:host=localhost;dbname=bd_capricornio', 'root', '');
-                      $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            table {
+              width: 100%;
+              border-collapse: collapse;
+            }
 
-                      // Preparamos la consulta
-                      $stmt = $conn->prepare('SELECT * FROM tb_comprador WHERE ci_1 LIKE :buscar');
-                      $stmt->bindParam(':buscar', $buscar, PDO::PARAM_STR);
-                      $stmt->execute();
+            th,
+            td {
+              border: 1px solid #ddd;
+              padding: 8px;
+              text-align: left;
+            }
 
-                      // Mostramos los resultados
-                      $resultados = $stmt->fetchAll();
-                      if ($resultados) {
-                          echo '<h2>Resultados de la búsqueda</h2>';
-                          foreach ($resultados as $resultado) {
-                            $id_com = $resultado['id_comprador'];
-                      ?>
-          <tbody>
-            <tr>
-              <th>
-          <?php
-            echo '<p>' . $resultado['id_comprador'] . '</p>';
-          ?>
-          </th>
-          <th>
-             <?php
-           echo '<p>' . $resultado['nombre_1'] . '</p>';
-          ?> 
-          </th>
-          <th>
-          <?php
-            echo '<p>' . $resultado['ap_paterno_1'] . '</p>';
-          ?>
-          </th>
-          <th>
-            <?php
-            echo '<p>' . $resultado['ap_materno_1'] . '</p>';
-          ?>
-          </th>
-          <th>
-            <?php
-            echo '<p>' . $resultado['ci_1'] . '</p>';
-          ?>
-          </th>
-          <th>
-          <?php
-            echo '<p>' . $resultado['exp_1'] . '</p>';
-          ?>
-          </th>
-          <th>
-          <?php
-            echo '<p>' . $resultado['celular_1'] . '</p>';
-          ?>
-          </th>
-          <th>
-          <a href="" type="button" class="btn btn-primary" data-toggle="modal" data-target="#actualizar_contacto" onclick="mostrarmensaje('<?php echo $id_com; ?>')" ?><i class="fas fa-wallet"></i></a>
-          <script>
-  function mostrarmensaje(a){
-    localStorage.setItem('id_c', a);
-    console.log(a);
-    window.location.href = 'buscar_cliente.php?variable=' + a;
-  }
-</script>
-          </th>
-          </tr>
-          
-            </tbody>
-          <?php
-        }
-    } else {
-     ?>
-     <script>
-      const Toast = Swal.mixin({
-  toast: true,
-  position: "top-end",
-  showConfirmButton: false,
-  timer: 3000,
-  timerProgressBar: true,
-  didOpen: (toast) => {
-    toast.onmouseenter = Swal.stopTimer;
-    toast.onmouseleave = Swal.resumeTimer;
-  }
-});
-Toast.fire({
-  icon: "error",
-  title: "NO SE ENCONTRARON REGISTRO"
-});
-     </script>
-     <?php
-    }
-}
-?>
-                   
-
-<!--                    <tfoot>
+            th {
+              background-color: #f4f4f4;
+            }
+          </style>
+          <div class="table-responsive_1">
+            <table class="table" id="example" class="display" style="width:100%">
+              <thead>
+                <tr>
+                  <th>Id_Comprador</th>
+                  <th>NOMBRES</th>
+                  <th>APELLIDO PATERNO</th>
+                  <th>APELLIDO MATERNO</th>
+                  <th>CI</th>
+                  <th>EXPEDIDO EN:</th>
+                  <th>CELULAR</th>
+                  <th>URBANIZACION</th>
+                  <th>PAGOS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if ($results): ?>
+                  <?php foreach ($results as $resultado): ?>
                     <tr>
-                        Resultados de la Busqueda
+                      <td><?php echo htmlspecialchars($resultado['id_comprador']); ?></td>
+                      <td><?php echo htmlspecialchars($resultado['nombre_1']); ?></td>
+                      <td><?php echo htmlspecialchars($resultado['ap_paterno_1']); ?></td>
+                      <td><?php echo htmlspecialchars($resultado['ap_materno_1']); ?></td>
+                      <td><?php echo htmlspecialchars($resultado['ci_1']); ?></td>
+                      <td><?php echo htmlspecialchars($resultado['exp_1']); ?></td>
+                      <td><?php echo htmlspecialchars($resultado['celular']); ?></td>
+                      <td><?php echo htmlspecialchars($resultado['urbanizacion']) . "<br> LOTE: " . htmlspecialchars($resultado['lote']) . "<br> MANZANO: " . htmlspecialchars($resultado['manzano']); ?></td>
+                      <td>
+                        <a class="btn btn-primary" href="<?php echo $URL ?>/admin/semi-contado/cliente_semicontado.php?variable=<?php echo urlencode($resultado['id_comprador']); ?>" class="btn btn-default">
+                          <i class="fas fa-wallet"></i> VER SEGUIMIENTO
+                        </a>
+                      </td>
                     </tr>
-                    </tfoot>-->
-                  </table>
-                </div>
-
-
-
-<!--?php
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $buscar = $_POST['buscar'];
-    // Conectamos a la base de datos
-    $conn = new PDO('mysql:host=localhost;dbname=bd_capricornio', 'root', '');
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Preparamos la consulta
-    $stmt = $conn->prepare('SELECT * FROM tb_comprador WHERE ci_1 LIKE :buscar');
-    $stmt->bindParam(':buscar', $buscar, PDO::PARAM_STR);
-    $stmt->execute();
-
-    // Mostramos los resultados
-    $resultados = $stmt->fetchAll();
-    if ($resultados) {
-        echo '<h2>Resultados de la búsqueda</h2>';
-        foreach ($resultados as $resultado) {
-            echo '<p>' . $resultado['id_comprador'] . '</p>';
-            echo '<p>' . $resultado['nombre_1'] . '</p>';
-            echo '<p>' . $resultado['ap_paterno_1'] . '</p>';
-            echo '<p>' . $resultado['ap_materno_1'] . '</p>';
-            echo '<p>' . $resultado['ci_1'] . '</p>';
-            echo '<p>' . $resultado['exp_1'] . '</p>';
-            echo '<p>' . $resultado['celular_1'] . '</p>';
-        }
-    } else {
-        echo '<p>No se encontraron resultados</p>';
-    }
-}
-?>-->
-                </div>
-              </div>
-            </div>
+                  <?php endforeach; ?>
+                <?php else: ?>
+                  <tr>
+                    <td colspan="9">No se encontraron registros.</td>
+                  </tr>
+                <?php endif; ?>
+              </tbody>
+            </table>
           </div>
-
-
-
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-
-
-
-
-
-
-<?php include ('../../layout/admin/parte2.php'); ?>
-
-
-
-
+<?php include('../../layout/admin/parte2.php'); ?>

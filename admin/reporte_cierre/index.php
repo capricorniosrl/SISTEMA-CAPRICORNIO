@@ -15,7 +15,7 @@ $id = $_GET['id'];
 // Verificar el estado del usuario
 
 
-$sql=$pdo->prepare("SELECT us.nombre, us.ap_paterno, us.ap_materno, info.id_informe, con.num_recibo, com.nombre_1, com.ap_paterno_1, com.ap_materno_1, com.ci_1, com.exp_1, com.nombre_2, com.ap_paterno_2, com.ap_materno_2, com.ci_2, com.exp_2, con.literal, con.monto_bolivianos, con.concepto, us.nombre, us.ap_paterno, us.ap_materno, con.monto_dolar, con.fecha_registro, con.superficie, con.lote, con.manzano, con.urbanizacion
+$sql=$pdo->prepare("SELECT info.precio_acordado, us.nombre, us.ap_paterno, us.ap_materno, info.id_informe, con.num_recibo, com.nombre_1, com.ap_paterno_1, com.ap_materno_1, com.ci_1, com.exp_1, com.nombre_2, com.ap_paterno_2, com.ap_materno_2, com.ci_2, com.exp_2, con.literal, con.monto_bolivianos, con.concepto, us.nombre, us.ap_paterno, us.ap_materno, con.monto_dolar, con.fecha_registro, con.superficie, con.lote, con.manzano, con.urbanizacion
 FROM tb_contado con
 INNER JOIN tb_comprador com
 INNER JOIN tb_usuarios us
@@ -38,7 +38,7 @@ class PDF extends FPDF{
    
     function Header()
     {
-        $this->Image('../../public/img/logo.png',20,5,65,25,'PNG');
+        $this->Image('../../public/img/logo.png',25,5,60,15,'PNG');
         $this->Cell(0,15,'',0,1,'C');
         $this->SetTextColor(0, 0, 0);
         $this->SetFont('Arial','B', 18);
@@ -194,7 +194,7 @@ $pdf->SetFont('Arial','B',12);
 $pdf->Cell(55,7,'PRECIO ACORDARO:' ,0,0,'L',true);
 $pdf->SetFont('helvetica','',12);
 
-$pdf->Cell(0,7,$datos['monto_dolar'].' DOLARES' ,0,1,'L',true);
+$pdf->Cell(0,7,$datos['precio_acordado'].' DOLARES' ,0,1,'L',true);
 
 $pdf->SetFont('Arial','B',12);
 $pdf->Cell(55,7,'PLAN:' ,0,0,'L');

@@ -93,7 +93,7 @@
                                     <option value="CH."  <?php if(isset($exp) && $exp == "CH.") echo "selected"; ?>>CHUQUISACA</option>
                                     <option value="TJ." <?php if(isset($exp) && $exp == "TJ.") echo "selected"; ?>>TARIJA</option>
                                     <option value="PN." <?php if(isset($exp) && $exp == "PN.") echo "selected"; ?>>PANDO</option>
-                                    <option value="BN." <?php if(isset($exp) && $exp == "BN.") echo "selected"; ?>>BENIZ</option>
+                                    <option value="BN." <?php if(isset($exp) && $exp == "BN.") echo "selected"; ?>>BENI</option>
                                     <option value="SC." <?php if(isset($exp) && $exp == "SC.") echo "selected"; ?>>SANTA CRUZ</option>
                                 </select>
                             </div>

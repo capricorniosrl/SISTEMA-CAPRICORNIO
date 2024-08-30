@@ -26,11 +26,11 @@ function enviar(){
 function correcto(){
 
     $('#mensajeerror').addClass('d-none');
-    console.log("datos con exito");
+  
 
     Swal.fire({
         icon: 'success',
-        title: 'Inicio de sesión exitoso 2024',
+        title: 'Inicio de sesión exitoso',
         text: '¡Bienvenido!',
         showConfirmButton: false,
         timer: 1500
@@ -42,7 +42,6 @@ function correcto(){
 }
 
 function phperror(text){
-    console.log("error");
     $('#mensajeerror').removeClass('d-none');
     $('#msjerror').html(text);
 

@@ -6,7 +6,7 @@
 
     include ('../../layout/admin/datos_session_user.php');
 
-
+$error="";
 $id_informe=$_POST['id_informe'];
 
 // DATOS COMPRADOR
@@ -25,7 +25,7 @@ $ci_2=$_POST['ci_2'];
 $exp_2=$_POST['exp_2'];
 $celular_2=$_POST['celular_2'];
 
-// // DATOS DECONTADO
+// // DATOS SEMICONTADO
 $precio_dolares=$_POST['precio_dolares'];
 $tipo_cambio=$_POST['tipo_cambio'];
 $precio_Bolivianos=$_POST['numero'];
@@ -46,6 +46,58 @@ $cuota_inicial=$_POST['cuota_inicial'];
 
 $numero_recibo_inicial=$_POST['numero_recibo'];
 
+$num_cuotas=$_POST['num_cuotas'];
+
+
+if (empty($_POST['ap_paterno_1'])) {
+        
+    $error .= "• FALTA INGRESAR ALMENOS UN APELLIDO"."<br>";  
+}
+
+if (empty($_POST['ap_materno_1'])) {
+        
+    $error .= "• FALTA INGRESAR ALMENOS UN APELLIDO"."<br>";    
+
+}
+
+if (empty($_POST['ci_1'])) {
+        
+    $error .= "• FALTA INGRESAR SU CI"."<br>";
+}
+
+if (empty($_POST['exp_1'])) {
+        
+    $error .= "• FALTA INGRESAR SU EXP"."<br>";
+
+}
+if (empty($_POST['precio_dolares'])) {
+        
+    $error .= "• FALTA INGRESAR EL PRECIO GENERAL"."<br>";
+
+}
+if (empty($_POST['tipo_cambio'])) {
+        
+    $error .= "• FALTA INGRESAR EL TIPO DE CAMBIO"."<br>";
+
+}
+if (empty($_POST['cuota_inicial'])) {
+        
+    $error .= "• FALTA INGRESAR SU CUOTA INICIAL"."<br>";
+
+}
+if (empty($_POST['numero_recibo'])) {
+        
+    $error .= "• FALTA FALTA INGRESAR EL NUMERO RE RECIBO"."<br>";
+
+}
+
+if (empty($_POST['num_cuotas'])) {
+    $error .= "• FALTA INGRESAR EL NUMERO DE CUOTAS"."<br>";
+}
+
+
+
+if ($error=="") {
 
 $sql = $pdo->prepare("INSERT INTO tb_comprador ( nombre_1, ap_paterno_1, ap_materno_1, ci_1, exp_1, celular_1, nombre_2, ap_paterno_2, ap_materno_2, ci_2, exp_2, celular_2, id_usuario_fk ) VALUES ( :nombre_1, :ap_paterno_1, :ap_materno_1, :ci_1, :exp_1, :celular_1, :nombre_2, :ap_paterno_2, :ap_materno_2, :ci_2, :exp_2, :celular_2, :id_usuario_fk )");
 
@@ -96,6 +148,7 @@ if ($sql->execute()) {
     $sql_2->bindParam(':created_at',$fechayhora);
     $sql_2->bindParam(':updated_at',$fechayhora);
     $sql_2->bindParam(':id_comprador_fk',$ID);
+    
     if ($sql_2->execute()) {
 
 
@@ -106,23 +159,57 @@ if ($sql->execute()) {
         $datos_semic=$datos_semicontado['id_semicontado'];
 
         $cuotas = $_POST['cuotas'];
+
+
+
+
+        $fecha_act = $_POST['fecha_registro'];
+
+        $mes=1;
+
+
         
         foreach ($cuotas as $dato) {
 
-            $sq4 = $pdo->prepare("INSERT INTO tb_cuotas (id_semicontado_fk,nombre_cuota) VALUES (:id_semicontado_fk,:nombre_cuota)");
 
-            $sq4->bindParam(':id_semicontado_fk',$datos_semic);
-            $sq4->bindParam(':nombre_cuota',$dato);
+            
+            $timestamp = strtotime($fecha_act);
+            $timestamp_nueva = strtotime("+$mes months", $timestamp);
+            $fecha_nueva = date('Y-m-d', $timestamp_nueva);
+
+            
+            // Preparar e insertar en la base de datos
+            $sq4 = $pdo->prepare("INSERT INTO tb_cuotas (id_semicontado_fk, nombre_cuota, fecha_pago) VALUES (:id_semicontado_fk, :nombre_cuota, :fecha_pago)");
+            $sq4->bindParam(':id_semicontado_fk', $datos_semic);
+            $sq4->bindParam(':nombre_cuota', $dato);
+            $sq4->bindParam(':fecha_pago', $fecha_nueva);
             $sq4->execute();
+            $mes++;
         }
-        // $sql_4=$pdo->prepare("UPDATE tb_informe SET estado_cierre='1' WHERE id_informe='$id_informe'");
-        // $sql_4->execute();
+
+    
+
+        $sql_4=$pdo->prepare("UPDATE tb_informe SET estado_cierre='2' WHERE id_informe='$id_informe'");
+        $sql_4->execute();
+
+        echo "exito";
 
         // header('Location:'. $URL.'/admin/reserva/index.php');
         // exit();
     }
     
 }
+
+
+    
+} else {
+   echo $error;
+}
+
+
+
+
+
 
 
 

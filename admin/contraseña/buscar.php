@@ -97,7 +97,7 @@ if (isset($_SESSION['session_designar'])) {
                 <tbody id="tablaUsuarios">
                   <!-- Aquí se llenarán los datos con AJAX -->
                 </tbody>
-                <tfoot>
+                <!-- <tfoot>
                   <tr>
                     <th>Nro.</th>
                     <th>NOMBRE CLIENTE</th>
@@ -105,7 +105,7 @@ if (isset($_SESSION['session_designar'])) {
                     <th>CONTRASEÑA</th>
                     <th>ACCIONES</th>
                   </tr>
-                </tfoot>
+                </tfoot> -->
               </table>
             </div>
 

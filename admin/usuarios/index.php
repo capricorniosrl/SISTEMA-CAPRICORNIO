@@ -122,7 +122,7 @@ if (isset($_SESSION['session_usuarios'])) {
                     
                     </tbody>
 
-                    <tfoot>
+                    <!-- <tfoot>
                     <tr>
                       <th>Nro.</th>
                       <th>NOMBRES</th>
@@ -132,7 +132,7 @@ if (isset($_SESSION['session_usuarios'])) {
                       <th>EMAIL</th>
                       <th>ACCIONES</th>
                     </tr>
-                    </tfoot>
+                    </tfoot> -->
                   </table>
                 </div>
               

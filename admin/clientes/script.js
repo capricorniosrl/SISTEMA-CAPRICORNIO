@@ -82,10 +82,10 @@ $('#formulario-Contacto_update').submit(function(evento){
         data:datos,
         success:function(text){
             if (text=="exito") {
-                // console.log("correcto");
+                console.log("correcto compañero");
                 correcto_update()
-            } else {
-                // console.log("error");
+            } else{
+                console.log("mal compañero");
                 phperror_update(text)
             }
         }
@@ -109,8 +109,9 @@ function correcto_update(){
 }
 
 function phperror_update(text){
-    $('#mensaje').removeClass('d-none');
-    $('#msjerror').html(text);
+    console.log(text);
+    $('#mensaje2').removeClass('d-none');
+    $('#mensaje2').html(text);
 }
 
 

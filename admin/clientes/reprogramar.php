@@ -1,181 +1,182 @@
 <?php
-    include ('../../app/config/config.php');
-    include ('../../app/config/conexion.php');
+include('../../app/config/config.php');
+include('../../app/config/conexion.php');
 
-    include ('../../layout/admin/session.php');
-    include ('../../layout/admin/datos_session_user.php');
+include('../../layout/admin/session.php');
+include('../../layout/admin/datos_session_user.php');
 ?>
 <?php
 if (isset($_SESSION['session_reg_clientes'])) {
     // echo "existe session y paso por el login";
-}else{
+} else {
     // echo "no existe session por que no ha pasado por el login";
-    header('Location:'.$URL.'/admin');
+    header('Location:' . $URL . '/admin');
 }
 ?>
-<?php  include ('../../layout/admin/parte1.php'); ?>
+<?php include('../../layout/admin/parte1.php'); ?>
 
 
 
 
-  <div class="content-wrapper">
+<div class="content-wrapper">
     <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Listado de Clientes para Reprogramar Llamada</h1>
-          </div><!-- /.col -->         
-        </div><!-- /.row -->
-        <!-- /.card -->
-        <div class="card card-info">
-            <div class="card-header ">
-            <h3 class="card-title">CONTACTOS PARA REPROGRAMAR LLAMADAS</h3>
-            </div>
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Listado de Clientes para Reprogramar Llamada</h1>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+            <!-- /.card -->
+            <div class="card card-info">
+                <div class="card-header ">
+                    <h3 class="card-title">CONTACTOS PARA REPROGRAMAR LLAMADAS</h3>
+                </div>
 
-            <!-- /.card-header -->
-            <div class="card-body">
-            
-            <script>
-                $(document).ready(function() {
-                    $('#example').DataTable( {
-                        "pageLength": 10,
-                        "language": {
-                            "emptyTable": "No hay información",
-                            "info": "Mostrando _START_ a _END_ de _TOTAL_ Usuarios",
-                            "infoEmpty": "Mostrando 0 a 0 de 0 Usuarios",
-                            "infoFiltered": "(Filtrado de _MAX_ total Usuarios)",
-                            "infoPostFix": "",
-                            "thousands": ",",
-                            "lengthMenu": "Mostrar _MENU_ Usuarios",
-                            "loadingRecords": "Cargando...",
-                            "processing": "Procesando...",
-                            "search": "Buscador:",
-                            "zeroRecords": "Sin resultados encontrados",
-                            "paginate": {
-                                "first": "Primero",
-                                "last": "Ultimo",
-                                "next": "Siguiente",
-                                "previous": "Anterior"
-                            }
-                        }
-                    });
-                } );
-               
-            </script>
+                <!-- /.card-header -->
+                <div class="card-body">
 
-            <div class="table-responsive">
-                <table id="example" class="display " style="width:100%">
-                <thead>
-                    <tr>
-                    <th>Nro.</th>
-                    <th>NOMBRE</th>
-                    <th>CONTACTO</th>
-                    <th>DETALLES</th>
-                    <th>LLAMADA</th>
-                    <th>FECHA_LLAMADA</th>
-                    <th>HORA_LLAMADA</th>
-                    <th>ACCIONES</th>
-                    </tr>
-                </thead>
+                    <script>
+                        $(document).ready(function() {
+                            $('#example').DataTable({
+                                "pageLength": 10,
+                                "language": {
+                                    "emptyTable": "No hay información",
+                                    "info": "Mostrando _START_ a _END_ de _TOTAL_ Clientes",
+                                    "infoEmpty": "Mostrando 0 a 0 de 0 Clientes",
+                                    "infoFiltered": "(Filtrado de _MAX_ total Clientes)",
+                                    "infoPostFix": "",
+                                    "thousands": ",",
+                                    "lengthMenu": "Mostrar _MENU_ Clientes",
+                                    "loadingRecords": "Cargando...",
+                                    "processing": "Procesando...",
+                                    "search": "Buscador:",
+                                    "zeroRecords": "Sin resultados encontrados",
+                                    "paginate": {
+                                        "first": "Primero",
+                                        "last": "Ultimo",
+                                        "next": "Siguiente",
+                                        "previous": "Anterior"
+                                    }
+                                }
+                            });
+                        });
+                    </script>
 
-                <tbody>
-                    <!-- PREPARAMOS LA CONSULTA APRA LISTAR LOS USUARIOS DE LA BASE DE DATOS -->
-                    <?php
-                    $query=$pdo->prepare("SELECT con.id_contacto, con.id_usuario_fk, con.celular, con.created_at, con.detalle, cli.fecha_llamada, cli.hora_llamada, cli.nombres, cli.apellidos, cli.id_cliente, cli.nombres, cli.apellidos, cli.detalle FROM tb_contactos con INNER JOIN tb_clientes cli WHERE
+                    <div class="table-responsive">
+                        <table id="example" class="display " style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Nro.</th>
+                                    <th>NOMBRE</th>
+                                    <th>CONTACTO</th>
+                                    <th>DETALLES</th>
+                                    <th>LLAMADA</th>
+                                    <th>FECHA_LLAMADA</th>
+                                    <th>HORA_LLAMADA</th>
+                                    <th>ACCIONES</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <!-- PREPARAMOS LA CONSULTA APRA LISTAR LOS USUARIOS DE LA BASE DE DATOS -->
+                                <?php
+                                $query = $pdo->prepare("SELECT con.id_contacto, con.id_usuario_fk, con.celular, con.created_at, con.detalle, cli.fecha_llamada, cli.hora_llamada, cli.nombres, cli.apellidos, cli.id_cliente, cli.nombres, cli.apellidos, cli.detalle FROM tb_contactos con INNER JOIN tb_clientes cli WHERE
                     (((con.id_contacto=cli.id_contacto_fk) AND cli.detalle_llamada='CONTESTO') AND cli.reprogramar='SI') AND cli.id_usuario_fk='$id_usuario' ORDER BY fecha_llamada, hora_llamada");
 
-                    $query->execute();
-                    
-
-                    $usuarios=$query->fetchAll(PDO::FETCH_ASSOC);
-
-                    $contador = 0;
-                    foreach ($usuarios as $usuario) {
-                    
-                    $detalle_sin_saltos = str_replace(array("\r\n", "\r", "\n"), '', $usuario['detalle']);
-
-                    $datos_contacto_reprogramar = $usuario['id_contacto'] . "||" . $usuario['celular']. "||" . $usuario['id_usuario_fk']. "||" . $usuario['id_cliente']. "||" . $usuario['nombres']. "||" . $usuario['apellidos']. "||" . $detalle_sin_saltos ;
-
-                    $contador++;
-
-                    $id = $usuario['id_contacto'];
+                                $query->execute();
 
 
-                    ?>
-                        
-                        <tr>
-                        
-                        <td><?php echo $contador;?></td>
+                                $usuarios = $query->fetchAll(PDO::FETCH_ASSOC);
 
-                        <td><?php echo $usuario['nombres']." ".$usuario['apellidos'];?></td>
+                                $contador = 0;
+                                foreach ($usuarios as $usuario) {
 
-                        <td>
-                            
-                            <a data-toggle="tooltip" data-placement="left" title="Enviar Mensaje al WhatsApp" target="_blank" href="https://wa.me/+591<?php echo $usuario['celular']?>"><i class="fab fa-whatsapp fa-xl btn btn-default rounded-circle shadow " style="color: #25D366;"></i></a>
-                            <?php echo $usuario['celular'];?>
-                           
-                        </td>
+                                    $detalle_sin_saltos = str_replace(array("\r\n", "\r", "\n"), '', $usuario['detalle']);
 
-      
-                        
-                        <?php
-                        if ($usuario['detalle']=="SIN DETALLES") {
-                        ?>
-                            <td><?php echo $usuario['detalle'];?></td>                            
-                        <?php
-                        
-                        } else {
-                        ?>                            
-                            <td class="">
-                            <?php
-                                // Obtener el contenido del mensaje
-                                 $detalle = strtoupper($usuario['detalle']);
+                                    $datos_contacto_reprogramar = $usuario['id_contacto'] . "||" . $usuario['celular'] . "||" . $usuario['id_usuario_fk'] . "||" . $usuario['id_cliente'] . "||" . $usuario['nombres'] . "||" . $usuario['apellidos'] . "||" . $detalle_sin_saltos;
 
-                                // Usar preg_match para obtener el último mensaje después de un asterisco
-                                if (preg_match('/[^*]+\*([^*]+)$/', $detalle, $matches)) {
-                                    $mensaje_a_mostrar = trim($matches[1]);
-                                } else {
-                                    $mensaje_a_mostrar = trim($detalle);
+                                    $contador++;
+
+                                    $id = $usuario['id_contacto'];
+
+
+                                ?>
+
+                                    <tr>
+
+                                        <td><?php echo $contador; ?></td>
+
+                                        <td><?php echo $usuario['nombres'] . " " . $usuario['apellidos']; ?></td>
+
+                                        <td>
+
+                                            <a data-toggle="tooltip" data-placement="left" title="Enviar Mensaje al WhatsApp" target="_blank" href="https://wa.me/+591<?php echo $usuario['celular'] ?>?text=<?php echo urlencode('Hola, soy ' . $nombre . ', asesor de ventas'); ?>">
+                                                <i class="fab fa-whatsapp fa-xl btn btn-default rounded-circle shadow" style="color: #25D366;"></i>
+                                            </a>
+                                            <?php echo $usuario['celular']; ?>
+
+                                        </td>
+
+
+
+                                        <?php
+                                        if ($usuario['detalle'] == "SIN DETALLES") {
+                                        ?>
+                                            <td><?php echo $usuario['detalle']; ?></td>
+                                        <?php
+
+                                        } else {
+                                        ?>
+                                            <td class="">
+                                                <?php
+                                                // Obtener el contenido del mensaje
+                                                $detalle = strtoupper($usuario['detalle']);
+
+                                                // Usar preg_match para obtener el último mensaje después de un asterisco
+                                                if (preg_match('/[^*]+\*([^*]+)$/', $detalle, $matches)) {
+                                                    $mensaje_a_mostrar = trim($matches[1]);
+                                                } else {
+                                                    $mensaje_a_mostrar = trim($detalle);
+                                                }
+
+                                                // Mostrar el mensaje
+                                                echo htmlspecialchars($mensaje_a_mostrar);
+                                                ?>
+                                            </td>
+                                        <?php
+                                        }
+
+                                        ?>
+
+                                        <td>
+                                            <i class="fas fa-phone text-success"></i><span class="text-success"> LLAMAR DE NUEVO</span>
+                                        </td>
+
+                                        <td>
+                                            <?php echo $usuario['fecha_llamada']; ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo $usuario['hora_llamada']; ?>
+                                        </td>
+
+                                        <td>
+
+                                            <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;" data-toggle="modal" data-target="#agendar" onclick="modal_agenda_reprogramar('<?php echo $datos_contacto_reprogramar ?>')">
+                                                <i class="fas fa-calendar-alt"></i> Agendar
+                                            </button>
+                                        </td>
+                                    </tr>
+
+
+                                <?php
                                 }
-
-                                // Mostrar el mensaje
-                                echo htmlspecialchars($mensaje_a_mostrar);
-                            ?>
-                            </td>
-                        <?php
-                        }
-                        
-                        ?> 
-
-                        <td>
-                            <i class="fas fa-phone text-success"></i><span class="text-success"> LLAMAR DE NUEVO</span>
-                        </td>
-
-                        <td>
-                            <?php echo $usuario['fecha_llamada'];?>
-                        </td>
-
-                        <td>
-                            <?php echo $usuario['hora_llamada'];?> 
-                        </td>
-
-                        <td>      
-
-                        <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;" data-toggle="modal" data-target="#agendar" onclick="modal_agenda_reprogramar('<?php echo $datos_contacto_reprogramar ?>')">
-                            <i class="fas fa-calendar-alt"></i>  Agendar
-                            </button>
-                        </td>
-                        </tr>
+                                ?>
 
 
-                    <?php
-                    }
-                    ?>
-                
-                
-                </tbody>
+                            </tbody>
 
-                <tfoot>
+                            <!-- <tfoot>
                 <tr>
                     <th>Nro.</th>
                     <th>NOMBRE</th>
@@ -186,368 +187,363 @@ if (isset($_SESSION['session_reg_clientes'])) {
                     <th>HORA_LLAMADA</th>
                     <th>ACCIONES</th>
                 </tr>
-                </tfoot>
-                </table>
-            </div>
-            
-            
-            <!-- ventana modal Nuevo Cliente -->
-            <div class="modal fade " id="agendar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                    <div class="modal-content">
-                    <div class="modal-header bg-info">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Registro de Nuevo Cliente</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
+                </tfoot> -->
+                        </table>
                     </div>
 
-                    <div class="modal-body">
-                        
-                        <form id="form-agendar" method="post" action="">
-                            <div class="row ">
-                                <div class="col d-none" id="mensaje">
-                                <i class="fas fa-bullhorn text-danger"></i>
-                                Alerta
 
-                                <div class="callout callout-danger">
-                                <p class="text-danger" id="msjerror">* </p>
-                                </div>
-                                </div>
-                                
-                                
-                            </div>
-                            <div class="row" hidden>
-                                <div class="col-12 col-sm-4" >
-                                    <div class="form-group">
-                                        <label>id_cliente</label>
-                                        <input type="text" name="id_cliente" id="id_cliente_reprogramar" class="form-control" placeholder="id_contacto" >
-                                    </div>
+                    <!-- ventana modal Nuevo Cliente -->
+                    <div class="modal fade " id="agendar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header bg-info">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Registro de Nuevo Cliente</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
 
-                                <div class="col-12 col-sm-4" >    
-                                    <div class="form-group">
-                                        <label>id_contacto</label>
-                                        <input type="text" name="id_contacto" id="id_contacto_reprogramar" class="form-control" placeholder="id_contacto" >
-                                    </div>
-                                </div>
+                                <div class="modal-body">
 
-                                <div class="col-12 col-sm-4" >
-                                    <div class="form-group">
-                                        <label>id_usuario <span class="text-danger">*</span> </label>
-                                        <input type="text" name="id_usuario" id="id_usuario_reprogramar" class="form-control" placeholder="id_usuario" readonly >
-                                    </div>
-                                </div>
-                            </div>
+                                    <form id="form-agendar" method="post" action="">
+                                        <div class="row ">
+                                            <div class="col d-none" id="mensaje">
+                                                <i class="fas fa-bullhorn text-danger"></i>
+                                                Alerta
 
-                            <div class="row">
-                                <div class="col-12 col-sm-6">
-                                <div class="form-group">
-                                    <label>Nombres</label>
-                                    <input type="text" name="nombre" id="nombres" class="form-control" placeholder="Nombre Completo">
-                                </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                <div class="form-group">
-                                    <label>Apellidos</label>
-                                    <input type="text" name="apellido" id="apellidos" class="form-control" placeholder="Apellidos Completos">
-                                </div>
-                                </div>
-                                
-                            </div>
-
-                            <div class="row">
-
-                                <div class="col-12 col-sm-6">
-                                    
-                                    <div class="form-group">
-                                        <label>Celular <span class="text-danger">*</span> </label>
-                                        <input type="number" name="celular" id="celular_modal_reprogramar" class="form-control" placeholder="Celular" readonly>
-                                    </div>
-                                    </div>
-                                    <div class="col-12 col-sm-6">
-                                    <!-- text input -->
-                                    <div class="form-group">
-                                        <label>Tipo Urbanizacion  <span class="text-danger">*</span> </label>
-                                        <select class="form-control" name="urbanizacion" id="">
-                                        <option value="POLANCO">POLANCO</option>
-                                        <option value="TERRAZAS">TERRAZAS</option>
-                                        <option value="MIRADOR DEL SUR">MIRADOR DEL SUR</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-
-
-
-                            </div>
-
-                            
-                            <div class="row">
-
-                                <div class="col-12 col-sm-6">
-                                <!-- text input -->
-                                <div class="form-group">
-                                    <label>Detalle de Llamada <span class="text-danger">*</span> </label>
-                                    <select class="form-control" name="llamada" id="llamadaSelect">
-                                    <option value="CONTESTO">CONTESTO</option>
-                                    <option value="NO CONTESTO">NO CONTESTO</option>
-                                    <option value="SIN_INTERES">CONTESTO Y NO ESTA INTERESADO EN EL TERRENO</option>
-                                    </select>
-                                </div>
-                                </div>
-
-                                <div class="col-12 col-sm-6">
-                                <div class="form-group">
-                                    <label>FECHA REGISTRO <span class="text-danger">*</span> </label>
-                                    <input type="date" id="agenda" name="fecha_registro" class="form-control" readonly>
-
-                                </div>
-                                </div>
-
-                                <script>
-                                document.addEventListener('DOMContentLoaded', (event) => {
-                                    const today = new Date();
-                                    const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD
-                                    document.getElementById('agenda').value = formattedDate;
-
-                                    // Reset form when modal is hidden
-                                    $('#agendar').on('hidden.bs.modal', function () {
-                                    const form = $('#form-agendar')[0];
-                                        form.reset();
-                                        $('#additionalInputs').hide(); // Hide additional inputs if they were shown
-                                        
-                                        // Reset the date field again after resetting the form
-                                        document.getElementById('agenda').value = formattedDate;
-                                    });
-                                });
-                                </script>
-
-                                
-                            </div>
-
-                            <div class="row">
-                                <div class="col-12 col-sm-12">
-                                <div class="form-group">
-                                    <label>Detalle <span class="text-danger">*</span> </label>
-
-                                    <textarea style="text-transform: uppercase;" class="form-control" name="detalle" id="detalle" cols="30" rows="2" readonly hidden ></textarea>
-                                    <textarea style="text-transform: uppercase;" name="detalle2" cols="30" rows="2" id="" class="form-control"></textarea>
-                                    
-                                </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                    <div class="col-12">
-                                        <!-- Checkbox to show/hide additional inputs -->
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <div class="col text-left">
-                                                    <input type="checkbox" name="mi_checkbox" id="reprogramar" onclick="toggleAdditionalInputs()">
-                                                    <label for="reprogramar">Reprogramar Llamada</label>
+                                                <div class="callout callout-danger">
+                                                    <p class="text-danger" id="msjerror">* </p>
                                                 </div>
-                                                <div class="col text-right">
-                                                    <input type="checkbox" name="mi_checkbox_agendar" id="nuevoCheckbox" onclick="toggleNewFormInputs()">
-                                                    <label for="nuevoCheckbox">Agendar Visita</label>
-                                                </div>                                                
                                             </div>
-                                        </div>
 
-                                        <!-- NUEVO FORMULARIO PARA REPROGRAMAR LLAMADA -->
-                                        <div id="additionalInputs" style="display: none;">
-                                            <div class="row">
-                                                <div class="col-12 col-sm-6">
-                                                    <div class="form-group">
-                                                        <label>Fecha de Llamada</label>
-                                                        <input type="date" name="fecha_llamada" class="form-control">
-                                                    </div>
+
+                                        </div>
+                                        <div class="row" hidden>
+                                            <div class="col-12 col-sm-4">
+                                                <div class="form-group">
+                                                    <label>id_cliente</label>
+                                                    <input type="text" name="id_cliente" id="id_cliente_reprogramar" class="form-control" placeholder="id_contacto">
                                                 </div>
-                                                <div class="col-12 col-sm-6">
-                                                    <div class="form-group">
-                                                        <label>Hora de Llamada</label>
-                                                        <input type="time" name="hora_llamada" class="form-control" placeholder="Detalle Adicional">
-                                                    </div>
+                                            </div>
+
+                                            <div class="col-12 col-sm-4">
+                                                <div class="form-group">
+                                                    <label>id_contacto</label>
+                                                    <input type="text" name="id_contacto" id="id_contacto_reprogramar" class="form-control" placeholder="id_contacto">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 col-sm-4">
+                                                <div class="form-group">
+                                                    <label>id_usuario <span class="text-danger">*</span> </label>
+                                                    <input type="text" name="id_usuario" id="id_usuario_reprogramar" class="form-control" placeholder="id_usuario" readonly>
                                                 </div>
                                             </div>
                                         </div>
 
-
-                                        <!-- NUEVO FORMULARIO PARA AGENDAR -->
-                                        <div id="newFormInputs" style="display: none;">
-                                            <div class="row">
-                                                <div class="col-12 col-sm-6">
-                                                    <div class="form-group">
-                                                        <label>Fecha de Visita</label>
-                                                        <input type="date" name="fecha_visita" class="form-control">
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6">
-                                                    <div class="form-group">
-                                                        <label>Número de Visitantes</label>
-                                                        <select name="numero_visitantes" class="form-control">
-                                                            <option value="">Cuantos Asistiran a la Visita</option>
-                                                            <option value="1 Personas">1 Personas</option>
-                                                            <option value="2 Personas">2 Personas</option>
-                                                            <option value="3 Personas">3 Personas</option>
-                                                            <option value="4 Personas">4 Personas</option>
-                                                            <option value="5 Personas">5 Personas</option>
-                                                            <option value="6 Personas">6 Personas</option>
-                                                            <option value="7 Personas">7 Personas</option>
-                                                            <option value="8 Personas">8 Personas</option>
-                                                            <option value="9 Personas">9 Personas</option>
-                                                        </select>
-                                                    </div>
+                                        <div class="row">
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label>Nombres</label>
+                                                    <input type="text" name="nombre" id="nombres" class="form-control" placeholder="Nombre Completo">
                                                 </div>
                                             </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label>Apellidos</label>
+                                                    <input type="text" name="apellido" id="apellidos" class="form-control" placeholder="Apellidos Completos">
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="row">
+
+                                            <div class="col-12 col-sm-6">
+
+                                                <div class="form-group">
+                                                    <label>Celular <span class="text-danger">*</span> </label>
+                                                    <input type="number" name="celular" id="celular_modal_reprogramar" class="form-control" placeholder="Celular" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <!-- text input -->
+                                                <div class="form-group">
+                                                    <label>Tipo Urbanizacion <span class="text-danger">*</span> </label>
+                                                    <select class="form-control" name="urbanizacion" id="">
+                                                        <option value="POLANCO">POLANCO</option>
+                                                        <option value="TERRAZAS">TERRAZAS</option>
+                                                        <option value="MIRADOR DEL SUR">MIRADOR DEL SUR</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+
+
+
                                         </div>
 
 
-                                        <script>
-                                            document.addEventListener('DOMContentLoaded', function() {
-                                              const llamadaSelect = document.getElementById('llamadaSelect');
-                                              const reprogramarCheckbox = document.getElementById('reprogramar');
-                                              const nuevoCheckbox = document.getElementById('nuevoCheckbox');
-                                              const form = document.getElementById('form-agendar');
+                                        <div class="row">
 
-                                              llamadaSelect.addEventListener('change', function() {
-                                                  if (llamadaSelect.value === 'CONTESTO') {
-                                                      reprogramarCheckbox.required = false;  // No requerir checkboxes individualmente
-                                                      nuevoCheckbox.required = false;       // No requerir checkboxes individualmente
-                                                      reprogramarCheckbox.disabled = false; // Habilitar checkboxes
-                                                      nuevoCheckbox.disabled = false;      // Habilitar checkboxes
-                                                  } else if (llamadaSelect.value === 'NO CONTESTO' || llamadaSelect.value === 'SIN_INTERES') {
-                                                      reprogramarCheckbox.checked = false;  // Desmarcar el checkbox
-                                                      nuevoCheckbox.checked = false;       // Desmarcar el checkbox
-                                                      reprogramarCheckbox.disabled = true; // Deshabilitar checkboxes
-                                                      nuevoCheckbox.disabled = true;      // Deshabilitar checkboxes
-                                                  } else {
-                                                      reprogramarCheckbox.required = false;  // No requerir checkboxes individualmente
-                                                      nuevoCheckbox.required = false;       // No requerir checkboxes individualmente
-                                                      reprogramarCheckbox.disabled = false; // Habilitar checkboxes
-                                                      nuevoCheckbox.disabled = false;      // Habilitar checkboxes
-                                                  }
-                                              });
+                                            <div class="col-12 col-sm-6">
+                                                <!-- text input -->
+                                                <div class="form-group">
+                                                    <label>Detalle de Llamada <span class="text-danger">*</span> </label>
+                                                    <select class="form-control" name="llamada" id="llamadaSelect">
+                                                        <option value="CONTESTO">CONTESTO</option>
+                                                        <option value="NO CONTESTO">NO CONTESTO</option>
+                                                        <option value="SIN_INTERES">CONTESTO Y NO ESTA INTERESADO EN EL TERRENO</option>
+                                                    </select>
+                                                </div>
+                                            </div>
 
-                                              form.addEventListener('submit', function(event) {
-                                                  if (llamadaSelect.value === 'CONTESTO') {
-                                                      if (!reprogramarCheckbox.checked && !nuevoCheckbox.checked) {
-                                                        const Toast = Swal.mixin({
-                                                        toast: true,
-                                                        position: "top-end",
-                                                        showConfirmButton: false,
-                                                        timer: 3000,
-                                                        timerProgressBar: true,
-                                                        didOpen: (toast) => {
-                                                            toast.onmouseenter = Swal.stopTimer;
-                                                            toast.onmouseleave = Swal.resumeTimer;
-                                                        }
-                                                        });
-                                                        Toast.fire({
-                                                        icon: "info",
-                                                        title: "<span style='color: #000000;'>Debes seleccionar al menos uno de los checkboxes</span>\n\t<span style='color: #007bff;'>1 Reprogramar Llamada\n\t2 Agendar Visita</span>"
-                                                        });
-                                                          event.preventDefault();  // Evita el envío del formulario
-                                                      }
-                                                  }
-                                              });
-                                          });
-                                            document.addEventListener('DOMContentLoaded', (event) => {
-                                                const today = new Date();
-                                                const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD
-                                                document.getElementById('agenda').value = formattedDate;
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label>FECHA REGISTRO <span class="text-danger">*</span> </label>
+                                                    <input type="date" id="agenda" name="fecha_registro" class="form-control" readonly>
 
-                                                // Reset form when modal is hidden
-                                                $('#agendar').on('hidden.bs.modal', function () {
-                                                    const form = $('#form-agendar')[0];
-                                                    form.reset();
-                                                    $('#additionalInputs').hide(); // Hide additional inputs if they were shown
-                                                    $('#newFormInputs').hide(); // Hide new form inputs if they were shown
+                                                </div>
+                                            </div>
 
-                                                    // Reset the date field again after resetting the form
+                                            <script>
+                                                document.addEventListener('DOMContentLoaded', (event) => {
+                                                    const today = new Date();
+                                                    const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD
                                                     document.getElementById('agenda').value = formattedDate;
+
+                                                    // Reset form when modal is hidden
+                                                    $('#agendar').on('hidden.bs.modal', function() {
+                                                        const form = $('#form-agendar')[0];
+                                                        form.reset();
+                                                        $('#additionalInputs').hide(); // Hide additional inputs if they were shown
+
+                                                        // Reset the date field again after resetting the form
+                                                        document.getElementById('agenda').value = formattedDate;
+                                                    });
                                                 });
+                                            </script>
 
-                                                // Check if the form is being submitted
-                                                document.getElementById('form-agendar').addEventListener('submit', function(event) {
-                                                    updateFormAction();
-                                                });
-                                            });
 
-                                            function toggleAdditionalInputs() {
-                                                const reprogramarCheckbox = document.getElementById('reprogramar');
-                                                const additionalInputs = document.getElementById('additionalInputs');
+                                        </div>
 
-                                                if (reprogramarCheckbox.checked) {
-                                                    additionalInputs.style.display = 'block';
-                                                } else {
-                                                    additionalInputs.style.display = 'none';
-                                                }
+                                        <div class="row">
+                                            <div class="col-12 col-sm-12">
+                                                <div class="form-group">
+                                                    <label>Detalle <span class="text-danger">*</span> </label>
 
-                                                updateFormAction();
-                                            }
+                                                    <textarea style="text-transform: uppercase;" class="form-control" name="detalle" id="detalle" cols="30" rows="2" readonly hidden></textarea>
+                                                    <textarea style="text-transform: uppercase;" name="detalle2" cols="30" rows="2" id="" class="form-control"></textarea>
 
-                                            function toggleNewFormInputs() {
-                                                const nuevoCheckbox = document.getElementById('nuevoCheckbox');
-                                                const newFormInputs = document.getElementById('newFormInputs');
-                                                const reprogramarCheckbox = document.getElementById('reprogramar');
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                                if (nuevoCheckbox.checked) {
-                                                    reprogramarCheckbox.checked = false; // Uncheck 'Reprogramar Llamada'
-                                                    reprogramarCheckbox.disabled = true; // Disable 'Reprogramar Llamada' checkbox
-                                                    document.getElementById('additionalInputs').style.display = 'none'; // Hide 'Reprogramar Llamada' inputs
-                                                    newFormInputs.style.display = 'block'; // Show 'Agendar Visita' inputs
-                                                } else {
-                                                    reprogramarCheckbox.disabled = false; // Enable 'Reprogramar Llamada' checkbox
-                                                    newFormInputs.style.display = 'none'; // Hide 'Agendar Visita' inputs
-                                                }
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <!-- Checkbox to show/hide additional inputs -->
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col text-left">
+                                                            <input type="checkbox" name="mi_checkbox" id="reprogramar" onclick="toggleAdditionalInputs()">
+                                                            <label for="reprogramar">Reprogramar Llamada</label>
+                                                        </div>
+                                                        <div class="col text-right">
+                                                            <input type="checkbox" name="mi_checkbox_agendar" id="nuevoCheckbox" onclick="toggleNewFormInputs()">
+                                                            <label for="nuevoCheckbox">Agendar Visita</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                                                updateFormAction();
-                                            }
+                                                <!-- NUEVO FORMULARIO PARA REPROGRAMAR LLAMADA -->
+                                                <div id="additionalInputs" style="display: none;">
+                                                    <div class="row">
+                                                        <div class="col-12 col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>Fecha de Llamada</label>
+                                                                <input type="date" name="fecha_llamada" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>Hora de Llamada</label>
+                                                                <input type="time" name="hora_llamada" class="form-control" placeholder="Detalle Adicional">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                                            function updateFormAction() {
-                                                const form = document.getElementById('form-agendar');
-                                                const agendarUrl = '<?php echo $URL?>/admin/agendar/index.php';
-                                                const crearClienteUrl = '<?php echo $URL?>/admin/clientes/controller_reprogramar_llamanda.php';
-                                                const nuevoCheckbox = document.getElementById('nuevoCheckbox');
-                                                const reprogramarCheckbox = document.getElementById('reprogramar');
 
-                                                // Cambia el action del formulario según el estado de los checkboxes
-                                                if (nuevoCheckbox.checked) {
-                                                    form.action = agendarUrl;
-                                                } else if (reprogramarCheckbox.checked) {
-                                                    form.action = crearClienteUrl;
-                                                } else {
-                                                    form.action = '<?php echo $URL?>/admin/clientes/controller_no_check.php'; // Acción predeterminada si ningún checkbox está marcado
-                                                }
-                                            }
+                                                <!-- NUEVO FORMULARIO PARA AGENDAR -->
+                                                <div id="newFormInputs" style="display: none;">
+                                                    <div class="row">
+                                                        <div class="col-12 col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>Fecha de Visita</label>
+                                                                <input type="date" name="fecha_visita" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 col-sm-6">
+                                                            <div class="form-group">
+                                                                <label>Número de Visitantes</label>
+                                                                <select name="numero_visitantes" class="form-control">
+                                                                    <option value="1 Personas">1 Personas</option>
+                                                                    <option value="2 Personas">2 Personas</option>
+                                                                    <option value="3 Personas">3 Personas</option>
+                                                                    <option value="4 Personas">4 Personas</option>
+                                                                    <option value="5 Personas">5 Personas</option>
+                                                                    <option value="6 Personas">6 Personas</option>
+                                                                    <option value="7 Personas">7 Personas</option>
+                                                                    <option value="8 Personas">8 Personas</option>
+                                                                    <option value="9 Personas">9 Personas</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                                        </script>
 
-                                    </div>
+                                                <script>
+                                                    document.addEventListener('DOMContentLoaded', function() {
+                                                        const llamadaSelect = document.getElementById('llamadaSelect');
+                                                        const reprogramarCheckbox = document.getElementById('reprogramar');
+                                                        const nuevoCheckbox = document.getElementById('nuevoCheckbox');
+                                                        const form = document.getElementById('form-agendar');
+
+                                                        llamadaSelect.addEventListener('change', function() {
+                                                            if (llamadaSelect.value === 'CONTESTO') {
+                                                                reprogramarCheckbox.required = false; // No requerir checkboxes individualmente
+                                                                nuevoCheckbox.required = false; // No requerir checkboxes individualmente
+                                                                reprogramarCheckbox.disabled = false; // Habilitar checkboxes
+                                                                nuevoCheckbox.disabled = false; // Habilitar checkboxes
+                                                            } else if (llamadaSelect.value === 'NO CONTESTO' || llamadaSelect.value === 'SIN_INTERES') {
+                                                                reprogramarCheckbox.checked = false; // Desmarcar el checkbox
+                                                                nuevoCheckbox.checked = false; // Desmarcar el checkbox
+                                                                reprogramarCheckbox.disabled = true; // Deshabilitar checkboxes
+                                                                nuevoCheckbox.disabled = true; // Deshabilitar checkboxes
+                                                            } else {
+                                                                reprogramarCheckbox.required = false; // No requerir checkboxes individualmente
+                                                                nuevoCheckbox.required = false; // No requerir checkboxes individualmente
+                                                                reprogramarCheckbox.disabled = false; // Habilitar checkboxes
+                                                                nuevoCheckbox.disabled = false; // Habilitar checkboxes
+                                                            }
+                                                        });
+
+                                                        form.addEventListener('submit', function(event) {
+                                                            if (llamadaSelect.value === 'CONTESTO') {
+                                                                if (!reprogramarCheckbox.checked && !nuevoCheckbox.checked) {
+                                                                    const Toast = Swal.mixin({
+                                                                        toast: true,
+                                                                        position: "top-end",
+                                                                        showConfirmButton: false,
+                                                                        timer: 3000,
+                                                                        timerProgressBar: true,
+                                                                        didOpen: (toast) => {
+                                                                            toast.onmouseenter = Swal.stopTimer;
+                                                                            toast.onmouseleave = Swal.resumeTimer;
+                                                                        }
+                                                                    });
+                                                                    Toast.fire({
+                                                                        icon: "info",
+                                                                        title: "<span style='color: #000000;'>Debes seleccionar al menos uno de los checkboxes</span>\n\t<span style='color: #007bff;'>1 Reprogramar Llamada\n\t2 Agendar Visita</span>"
+                                                                    });
+                                                                    event.preventDefault(); // Evita el envío del formulario
+                                                                }
+                                                            }
+                                                        });
+                                                    });
+                                                    document.addEventListener('DOMContentLoaded', (event) => {
+                                                        const today = new Date();
+                                                        const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD
+                                                        document.getElementById('agenda').value = formattedDate;
+
+                                                        // Reset form when modal is hidden
+                                                        $('#agendar').on('hidden.bs.modal', function() {
+                                                            const form = $('#form-agendar')[0];
+                                                            form.reset();
+                                                            $('#additionalInputs').hide(); // Hide additional inputs if they were shown
+                                                            $('#newFormInputs').hide(); // Hide new form inputs if they were shown
+
+                                                            // Reset the date field again after resetting the form
+                                                            document.getElementById('agenda').value = formattedDate;
+                                                        });
+
+                                                        // Check if the form is being submitted
+                                                        document.getElementById('form-agendar').addEventListener('submit', function(event) {
+                                                            updateFormAction();
+                                                        });
+                                                    });
+
+                                                    function toggleAdditionalInputs() {
+                                                        const reprogramarCheckbox = document.getElementById('reprogramar');
+                                                        const additionalInputs = document.getElementById('additionalInputs');
+
+                                                        if (reprogramarCheckbox.checked) {
+                                                            additionalInputs.style.display = 'block';
+                                                        } else {
+                                                            additionalInputs.style.display = 'none';
+                                                        }
+
+                                                        updateFormAction();
+                                                    }
+
+                                                    function toggleNewFormInputs() {
+                                                        const nuevoCheckbox = document.getElementById('nuevoCheckbox');
+                                                        const newFormInputs = document.getElementById('newFormInputs');
+                                                        const reprogramarCheckbox = document.getElementById('reprogramar');
+
+                                                        if (nuevoCheckbox.checked) {
+                                                            reprogramarCheckbox.checked = false; // Uncheck 'Reprogramar Llamada'
+                                                            reprogramarCheckbox.disabled = true; // Disable 'Reprogramar Llamada' checkbox
+                                                            document.getElementById('additionalInputs').style.display = 'none'; // Hide 'Reprogramar Llamada' inputs
+                                                            newFormInputs.style.display = 'block'; // Show 'Agendar Visita' inputs
+                                                        } else {
+                                                            reprogramarCheckbox.disabled = false; // Enable 'Reprogramar Llamada' checkbox
+                                                            newFormInputs.style.display = 'none'; // Hide 'Agendar Visita' inputs
+                                                        }
+
+                                                        updateFormAction();
+                                                    }
+
+                                                    function updateFormAction() {
+                                                        const form = document.getElementById('form-agendar');
+                                                        const agendarUrl = '<?php echo $URL ?>/admin/agendar/index.php';
+                                                        const crearClienteUrl = '<?php echo $URL ?>/admin/clientes/controller_reprogramar_llamanda.php';
+                                                        const nuevoCheckbox = document.getElementById('nuevoCheckbox');
+                                                        const reprogramarCheckbox = document.getElementById('reprogramar');
+
+                                                        // Cambia el action del formulario según el estado de los checkboxes
+                                                        if (nuevoCheckbox.checked) {
+                                                            form.action = agendarUrl;
+                                                        } else if (reprogramarCheckbox.checked) {
+                                                            form.action = crearClienteUrl;
+                                                        } else {
+                                                            form.action = '<?php echo $URL ?>/admin/clientes/controller_no_check.php'; // Acción predeterminada si ningún checkbox está marcado
+                                                        }
+                                                    }
+                                                </script>
+
+                                            </div>
+                                        </div>
+
+                                        <button class="btn btn-outline-info btn-block" type="submit">Registrar</button>
+                                    </form>
                                 </div>
 
-                            <button class="btn btn-outline-info btn-block" type="submit">Registrar</button>
-                        </form>
+                            </div>
+                        </div>
                     </div>
 
-                    </div>
+
+
+
                 </div>
+                <!-- /.card-body -->
             </div>
-
-
-
-
-            </div>
-            <!-- /.card-body -->
-        </div>
-        <!-- /.card -->
-      </div><!-- /.container-fluid -->
+            <!-- /.card -->
+        </div><!-- /.container-fluid -->
     </div>
-  </div>
-  <script src="script.js"></script>
-<?php   include ('../../layout/admin/parte2.php');
+</div>
+<script src="script.js"></script>
+<?php include('../../layout/admin/parte2.php');
 ?>
-
-
- 

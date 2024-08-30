@@ -40,7 +40,7 @@ class PDF extends FPDF{
    
     function Header()
     {
-        $this->Image('../../public/img/logo.png',20,5,65,25,'PNG');
+        $this->Image('../../public/img/logo.png',25,5,55,15,'PNG');
         $this->Cell(0,15,'',0,1,'C');
         $this->SetTextColor(0, 0, 0);
         $this->SetFont('Arial','B', 18);

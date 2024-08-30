@@ -1,0 +1,3 @@
+Nombre de la base de datos MySQL    	u786528104_capricornioBD
+Nombre de usuario MySQL   		u786528104_capricornioBD
+Contraseña				Ronald_9962028

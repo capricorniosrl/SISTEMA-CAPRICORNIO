@@ -1,12 +1,12 @@
 <?PHP
-$email_session=$_SESSION['session_email'];
+$email_session = $_SESSION['session_email'];
 
 $query_usuario = $pdo->prepare("SELECT * FROM tb_usuarios WHERE email='$email_session' AND estado='1'");
 $query_usuario->execute();
 
 $session_usuarios = $query_usuario->fetchAll(PDO::FETCH_ASSOC);
 foreach ($session_usuarios as $session_usuario) {
-  
+
   $id_usuario = $session_usuario['id_usuario'];
   $nombre = strtoupper($session_usuario['nombre']);
   $ap_paterno = strtoupper($session_usuario['ap_paterno']);
@@ -15,7 +15,7 @@ foreach ($session_usuarios as $session_usuario) {
   $celular = $session_usuario['celular'];
   $cargo = strtoupper($session_usuario['cargo']);
   $direccion = strtoupper($session_usuario['direccion']);
-  $exp=$session_usuario['exp'];
+  $exp = $session_usuario['exp'];
 
   $foto_perfil = $session_usuario['foto_perfil']; //recuperamos la ruta de la imagen
 
@@ -28,58 +28,75 @@ $query_funciones->execute();
 $session_funciones = $query_funciones->fetchAll(PDO::FETCH_ASSOC);
 
 foreach ($session_funciones as $dato_funcion) {
-  if ($dato_funcion['nombre_funcion']=='CARGO') {
-    $_SESSION['session_cargo']=$dato_funcion['nombre_funcion'];
+  if ($dato_funcion['nombre_funcion'] == 'CARGO') {
+    $_SESSION['session_cargo'] = $dato_funcion['nombre_funcion'];
   }
 
 
 
-  if ($dato_funcion['nombre_funcion']=='FUNCIONES') {
-    $_SESSION['session_funciones']=$dato_funcion['nombre_funcion'];
+  if ($dato_funcion['nombre_funcion'] == 'FUNCIONES') {
+    $_SESSION['session_funciones'] = $dato_funcion['nombre_funcion'];
   }
 
 
 
-  if ($dato_funcion['nombre_funcion']=='URBANIZACIONES') {
-    $_SESSION['session_urbanizaciones']=$dato_funcion['nombre_funcion'];
+  if ($dato_funcion['nombre_funcion'] == 'URBANIZACIONES') {
+    $_SESSION['session_urbanizaciones'] = $dato_funcion['nombre_funcion'];
   }
 
 
-  if ($dato_funcion['nombre_funcion']=='USUARIOS') {
-    $_SESSION['session_usuarios']=$dato_funcion['nombre_funcion'];
+  if ($dato_funcion['nombre_funcion'] == 'USUARIOS') {
+    $_SESSION['session_usuarios'] = $dato_funcion['nombre_funcion'];
+  }
+
+  if ($dato_funcion['nombre_funcion'] == 'CONTRASEÑAS ') {
+    $_SESSION['session_restaurar_contraseña'] = $dato_funcion['nombre_funcion'];
   }
 
 
-
-  if ($dato_funcion['nombre_funcion']=='REG_CLIENTES') {
-    $_SESSION['session_reg_clientes']=$dato_funcion['nombre_funcion'];
-  }
-
-
-
-  if ($dato_funcion['nombre_funcion']=='AGE_CLIENTES') {
-    $_SESSION['session_age_clientes']=$dato_funcion['nombre_funcion'];
-  }
-
-
-
-  if ($dato_funcion['nombre_funcion']=='RESERVAS') {
-    $_SESSION['session_reservas']=$dato_funcion['nombre_funcion'];
-  }
-
-  
-  if ($dato_funcion['nombre_funcion']=='DESIGNAR') {
-    $_SESSION['session_designar']=$dato_funcion['nombre_funcion'];
+  if ($dato_funcion['nombre_funcion'] == 'REG_CLIENTES') {
+    $_SESSION['session_reg_clientes'] = $dato_funcion['nombre_funcion'];
   }
 
 
 
-  if ($dato_funcion['nombre_funcion']=='REPORTES') {
-    $_SESSION['session_reportes']=$dato_funcion['nombre_funcion'];
+  if ($dato_funcion['nombre_funcion'] == 'AGE_CLIENTES') {
+    $_SESSION['session_age_clientes'] = $dato_funcion['nombre_funcion'];
   }
 
 
 
+  if ($dato_funcion['nombre_funcion'] == 'RESERVAS') {
+    $_SESSION['session_reservas'] = $dato_funcion['nombre_funcion'];
+  }
+
+
+  if ($dato_funcion['nombre_funcion'] == 'DESIGNAR') {
+    $_SESSION['session_designar'] = $dato_funcion['nombre_funcion'];
+  }
+
+
+
+  if ($dato_funcion['nombre_funcion'] == 'REPORTES') {
+    $_SESSION['session_reportes'] = $dato_funcion['nombre_funcion'];
+  }
+
+  if ($dato_funcion['nombre_funcion'] == 'CIERRE_DIRECTO') {
+    $_SESSION['session_cierre_directo'] = $dato_funcion['nombre_funcion'];
+  }
+
+  if ($dato_funcion['nombre_funcion'] == 'BUSQUEDA_CIERRES') {
+    $_SESSION['busqueda_cierres'] = $dato_funcion['nombre_funcion'];
+  }
+
+  if ($dato_funcion['nombre_funcion'] == 'LISTA_CIERRES') {
+    $_SESSION['lista_cierres'] = $dato_funcion['nombre_funcion'];
+  }
+
+  if ($dato_funcion['nombre_funcion'] == 'LEGAL') {
+    $_SESSION['legal'] = $dato_funcion['nombre_funcion'];
+  }
+  if ($dato_funcion['nombre_funcion'] == 'IMPORTACIONES') {
+    $_SESSION['importaciones'] = $dato_funcion['nombre_funcion'];
+  }
 }
-
-?>
