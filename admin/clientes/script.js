@@ -1,3 +1,4 @@
+let celu = 0;
 $('#formulario-Contacto').submit(function(event){
     event.preventDefault();
     enviar();
@@ -70,17 +71,26 @@ function modal_actualizar_contacto(datos_contacto) {
     $("#id_contacto_actualizar").val(datoscontacto_update[0]);   
     $("#celular_modal_actualizar").val(datoscontacto_update[1]); 
     $("#id_usuario_actualizar").val(datoscontacto_update[2]); 
+    console.log(datos_contacto);
+    let cel = datos_contacto.split('||');         
+    console.log(cel[1]); 
+    celu = cel[1];
 }
 
 $('#formulario-Contacto_update').submit(function(evento){
     evento.preventDefault();
 
-    var datos=$('#formulario-Contacto_update').serialize();
+    let datos=$('#formulario-Contacto_update').serialize();
+    //datos.push({name: 'celular_obtenido', value: celu});
+    datos += '&celular_obtenido=' + encodeURIComponent(celu);
+    //datos += '&celular_obtenido' + encodeURIComponent(celu);
     $.ajax({
         type:"post",
         url:"controller_update_contacto.php",
-        data:datos,
+        //data:datos,
+        data: datos,
         success:function(text){
+            //console.log("Respuesta del servidor:", response);
             if (text=="exito") {
                 console.log("correcto compañero");
                 correcto_update()
@@ -89,10 +99,24 @@ $('#formulario-Contacto_update').submit(function(evento){
                 phperror_update(text)
             }
         }
-
     })
     
+    
 });
+
+document.getElementById('cierra_newreg_cli').addEventListener('click', function() {
+    location.reload();
+});
+
+document.getElementById('cierra_newreg_contac').addEventListener('click', function() {
+    location.reload();
+});
+
+document.getElementById('cierraact').addEventListener('click', function() {
+    location.reload();
+});
+
+
 
 function correcto_update(){ 
 

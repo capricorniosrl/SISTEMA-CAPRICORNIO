@@ -5,14 +5,21 @@ include('../../layout/admin/session.php');
 include('../../layout/admin/datos_session_user.php');
 
 $error = "";
-$id_contacto = $_POST['id_contacto_actualizar'];
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $celular = $_POST['celular_actualizar'] ?? '';
+$celular_obt = $_POST['celular_obtenido'] ?? '';
+
+echo "celular_obtenido: ".$celular_obt.",muestras";
+//$id_contacto = $_POST['id_contacto_actualizar'];
 
 if (empty($_POST['celular_actualizar'])) {
     $error = "* INGRESE UN NÚMERO DE CELULAR" . "<br>";
+    //$error = $celular_obt;
 } else {
 
     // Si existe el campo, validamos la información para que no entre código malicioso
-    $celular = $_POST['celular_actualizar'];
+  
     //$celular = "";
     // Limpiamos el campo
     $celular = filter_var($celular, FILTER_SANITIZE_STRING);
@@ -51,30 +58,42 @@ FROM tb_contactos conta
             $error .= "El numero " . $celular . " ya existe en la base de datos, y ya esta registrado con usted por favor registre otro numero<br>";
             //var_dump($resultados);
             //$resultados_dump = ob_get_clean(); // Obtener el contenido del buffer y limpiarlo
-            $error .= "<pre>" . htmlspecialchars($id_usuario) . "</pre>";
+            //$error .= "<pre>" . htmlspecialchars($id_usuario) . "</pre>";
         } else {
             $error .= "";
             $nomC = "";
-            foreach ($datos as $datobusq) {
-                $nomC .= $datobusq['nombre'] . " ";
-                $nomC .= $datobusq['ap_paterno'] . " ";
-                $nomC .= $datobusq['ap_materno'];
-            }
-            $sqli = $pdo->prepare('SELECT conta.*
+            $nom = "";
+            $ap_p = "";
+            $sqli = $pdo->prepare('SELECT * 
 FROM tb_contactos conta
  INNER JOIN 
  tb_usuarios us ON conta.id_usuario_fk = us.id_usuario
- WHERE conta.celular = :celular
+ WHERE (conta.celular = :celular)
  GROUP BY conta.celular');
             $sqli->bindParam(':celular', $celular);
+            
             $sqli->execute();
             $datitos = $sqli->fetchAll();
             foreach ($datitos as $dato) {
                 if ($dato['detalle'] == 'SIN DETALLES') {
+                    $nom =$dato['nombre'];
+                    $ap_p=$dato['ap_paterno'];
+                    $nomC = "Se registro con anterioridad por $nom $ap_p";
+                    $sql = $pdo->prepare('UPDATE tb_contactos cont
+                    SET cont.celular=:celular, cont.detalle= :detalle
+                    WHERE cont.celular = :celularobt  and cont.id_usuario_fk = :id_contacto');
+                        $sql->bindParam(':detalle', $detalle);
+                        $sql->bindParam(':celular', $celular);
+                        $sql->bindParam(':celularobt', $celular_obt);
+                        $sql->bindParam(':id_contacto', $id_usuario);
+                    if ($sql->execute()) {
+                        echo "exito";
+                    } else {
+                            echo $error;
+                        }
+                }/* else {
                     $detalle = "Este contacto se registro con anterioridad por " . $nomC;
-                } else {
-                    $detalle = "Este contacto se registro con anterioridad por " . $nomC;
-                }
+                }*/
             }
         }
     }
@@ -82,42 +101,11 @@ FROM tb_contactos conta
 
 
 if ($error == "") {
-    ?><script>obtienevalores()</script><?php
-?>
-    <script>
-        function obtienevalores() {
-            let inputElement = document.getElementById('celular_modal_actualizar');
-
-            // Obtener el valor inicial
-            let valorInicial = inputElement.value;
-
-            console.log("Valor inicial:", valorInicial);
-
-            let valorModificado = inputElement.value;
-            console.log("Valor modificado:", valorModificado);
-            // Escuchar el evento de cambio de valor
-            /*inputElement.addEventListener('input', function() {
-                // Obtener el valor modificado
-                
-                
-                
-            });*/
-        }
-    </script>
-<?php
-
-    /*$sql = $pdo->prepare('UPDATE tb_contactos cont
-SET cont.celular=:celular_actualizado, cont.detalle= :detalle
-WHERE cont.celular = :celular  and cont.id_usuario_fk = :id_contacto');
-    $sql->bindParam(':detalle', $detalle);
-    $sql->bindParam(':celular', $celular);
-    $sql->bindParam(':celular2', $celular2);
-
-    if ($sql->execute()) {
-        echo "exito";
-    } else {
-        echo $error;
-    }*/
+   echo "exito";    
 } else {
     echo $error;
+}
+
+
+
 }

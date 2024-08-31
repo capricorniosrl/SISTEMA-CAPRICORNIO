@@ -32,7 +32,7 @@ if (isset($_SESSION['session_reg_clientes'])) {
             <div class="modal-content">
               <div class="modal-header bg-info">
                 <h5 class="modal-title" id="exampleModalLongTitle">Registro de Nuevo Contacto</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" id="cierra_newreg_contac" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
@@ -153,14 +153,24 @@ if (isset($_SESSION['session_reg_clientes'])) {
             });
           });
           
-          function obtienedatos(){
-                            let modal = document.getElementById('actualizar_contacto');
-                          modal.addEventListener('shown.bs.modal', function(){
-                            console.log("muestra datos: ");
-                          });
+          function obtienedatos(a){
+            console.log(a);
+            let cel = a.split('||');         
+            console.log(cel[1]); 
+            let celu = cel[1];
+            //location.reload();
+            $.ajax({
+              type: "POST",
+              url: "controller_update_contacto.php",
+              data: {
+                celular_obt: celu
+              },
+              success: function(data) {
+                console.log(data);
+              }
+            });    
 
-
-                          
+            
                           }
         </script>
         <!-- /.card-header -->
@@ -226,7 +236,7 @@ if (isset($_SESSION['session_reg_clientes'])) {
                     <td><?php echo $usuario['created_at']; ?></td>
                     <td><?php echo $usuario['detalle']; ?></td>
                     <td>
-                      <a href="" type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#actualizar_contacto" onclick="modal_actualizar_contacto('<?php echo $datos_contacto ?>')"><i class="fa fa-edit"></i></a>
+                      <a href="" type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#actualizar_contacto" onclick="modal_actualizar_contacto('<?php echo $datos_contacto ?>');"><i class="fa fa-edit"></i></a>
                     </td>
                   </tr>
                 <?php
@@ -236,9 +246,6 @@ if (isset($_SESSION['session_reg_clientes'])) {
             </table>
           </div>
           <script>
-            $('#actualizar_contacto').on("click", function(){
-              console.log("aqui datos de prueba");
-            });
             
             document.addEventListener('DOMContentLoaded', (event) => {
               const today = new Date();
@@ -257,7 +264,7 @@ if (isset($_SESSION['session_reg_clientes'])) {
               <div class="modal-content">
                 <div class="modal-header bg-success">
                   <h5 class="modal-title" id="exampleModalLabel">Actualizar Contacto</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <button type="button" class="close" id="cierraact" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
@@ -272,7 +279,7 @@ if (isset($_SESSION['session_reg_clientes'])) {
                         </div>
                       </div>
                     </div>
-                    <button class="btn btn-outline-info btn-block" type="submit">Actualizar</button>
+                    <button class="btn btn-outline-info btn-block" id="actualizabtn" type="submit">Actualizar</button>
                   </form>
                   <div class="row ">
                     <div class="col d-none" id="mensaje2">
@@ -292,7 +299,7 @@ if (isset($_SESSION['session_reg_clientes'])) {
               <div class="modal-content">
                 <div class="modal-header bg-info">
                   <h5 class="modal-title" id="exampleModalLongTitle">Registro de Nuevo Cliente</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <button type="button" class="close" id="cierra_newreg_cli" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
@@ -596,7 +603,7 @@ if (isset($_SESSION['session_reg_clientes'])) {
                         </script>
                       </div>
                     </div>
-                    <button class="btn btn-outline-info btn-block" type="submit">Registrar</button>
+                    <button class="btn btn-outline-info btn-block" id="registrarbtn" type="submit">Registrar</button>
                   </form>
                 </div>
               </div>
