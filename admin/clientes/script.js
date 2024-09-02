@@ -90,13 +90,17 @@ $('#formulario-Contacto_update').submit(function(evento){
         //data:datos,
         data: datos,
         success:function(text){
-            //console.log("Respuesta del servidor:", response);
-            if (text=="exito") {
+            //let jsonResponse = JSON.parse(response);
+            console.log("Respuesta del servidor:", text);
+            //success or error
+            if (text === "success") {
                 console.log("correcto compañero");
                 correcto_update()
+                location.reload();
             } else{
                 console.log("mal compañero");
                 phperror_update(text)
+               
             }
         }
     })
