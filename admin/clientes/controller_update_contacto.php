@@ -98,9 +98,16 @@ function consulta_la_BD($celular,$id_usuario,$error,$pdo,$celular_obt){
             $error = "El numero " .$celular ." ya existe en la base de datos, y ya esta registrado con usted por favor registre otro numero<br>";
         } else {
             $error .= "";
+            $nomC = "";
             $nom = "";
             $ap_p = "";
-            $sqli = $pdo->prepare('SELECT * FROM tb_contactos conta WHERE (conta.id_usuario_fk != :id_usuario AND (conta.celular = :celular))');
+            $ap_m = "";
+            $sqli = $pdo->prepare('SELECT * 
+            FROM tb_contactos conta
+            INNER JOIN 
+            tb_usuarios us ON conta.id_usuario_fk != us.id_usuario
+            WHERE (conta.celular =  :celular AND us.id_usuario = :id_usuario)
+            GROUP BY conta.celular');
             $sqli->bindParam(':celular', $celular);
             $sqli->bindParam(':id_usuario', $id_usuario);
             $sqli->execute();
@@ -109,26 +116,63 @@ function consulta_la_BD($celular,$id_usuario,$error,$pdo,$celular_obt){
     $nro_filas = is_array($datitos) ? count($datitos) : 0;
     if ($nro_filas > 0) {
         //se repite en toda la base de datos y no en el usuario
+        foreach ($datitos as $dato) {
+            $nom = $dato['nombre'];
+            $ap_p = $dato['ap_paterno'];
+            $ap_m = $dato['ap_materno'];
+            $nomC = $nom." ".$ap_p." ".$ap_m;
+        }
+        $detalle ="ESTE USUARIO YA HA SIDO REGISTRADO , por  $nomC";
 
-                        ?>
+                $response = [
+                    'status' => 'success',
+                    'data' => [
+                        'sw' => 0,
+                        'celular' => $celular,
+                        'detalle' => $detalle,
+                        'id_usuario' => $id_usuario
+                    ]
+                ];
+                echo json_encode($response);
+                ?>
                         <script>
-                    Swal.fire(
-                'CORRECTO',
-                'actualizado con exito <br>',
-                'success'
-                ).then((result) => {
-                if (result.value) {
-                window.location.reload();
-                }
-                });
-                </script>
-                        <?php
-                 $sql = $pdo->prepare('UPDATE tb_contactos cont
-                 SET cont.celular=:celular
-                 WHERE cont.celular = :celularobt  and cont.id_usuario_fk = :id_contacto');
+                    Swal.fire({
+                title: "ESTE USUARIO YA HA SIDO REGISTRADO , por <?php echo $nomC ?>",
+                text: "Estas seguro de proceder con la actualizacion!",
+                showDenyButton: true,
+                confirmButtonText: "Aceptar",
+                denyButtonText: `Cancelar`
+                }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    Swal.fire("Correcto", "", "success");
+                    $.ajax({
+                                    type: "POST",
+                                    url: "update_validate.php",
+                                    data: { 
+                                        data: JSON.stringify(<?php echo json_encode($response);?>)
+                                    },
+                                    contentType: 'application/json', 
+                                    dataType: 'json',
+                                    success: function(response){
+                                        console.log("el respuesta completa es: ",response);
+                                        console.log("el dato esperado es ",response.status);
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error("Error en la solicitud:", error);
+                                        console.log("Respuesta del servidor:", xhr.responseText);
+                                    }                                    
+                                  });
+                   /*$sql = $pdo->prepare('UPDATE tb_contactos
+                            SET celular = :celular,
+                            detalle =:detalle,
+                            updated_at = :updated_at
+                            WHERE celular = :celular  and id_usuario_fk = :id_contacto');
                      $sql->bindParam(':celular', $celular);
-                     //$sql->bindParam(':detalle', $detalle);
-                     $sql->bindParam(':celularobt', $celular_obt);
+                     $sql->bindParam(':detalle', $detalle);
+                     $sql->bindParam(':updated_at',date('Y-m-d H:i:s'));
+
+                     //$sql->bindParam(':celularobt', $celular_obt);
                      $sql->bindParam(':id_contacto', $id_usuario);
                  $sql->execute();
                  $datos = $sql->fetchAll();
@@ -137,17 +181,74 @@ function consulta_la_BD($celular,$id_usuario,$error,$pdo,$celular_obt){
                      return "success";
                  }else{
                      return $error;
-                 }
+                 }*/
      //        }
+     
+     //window.location.reload();
+                } else if (result.isDenied) {
+                    Swal.fire("Los cambios no fueron efectuados", "", "info");
+                    window.location.reload();
+                }
+                });
+</script>
+<?php                 
+                 
     }else{
-        $sql = $pdo->prepare('UPDATE tb_contactos cont
-                 SET cont.celular=:celular and cont.detalle = :detalle
-                 WHERE cont.celular = :celularobt  and cont.id_usuario_fk = :id_contacto');
-                     $sql->bindParam(':celular', $celular);
-                     //$sql->bindParam(':detalle', $detalle);
-                     $sql->bindParam(':celularobt', $celular_obt);
-                     $sql->bindParam(':id_contacto', $id_usuario);
-                 $sql->execute();
+                $response = array(
+                    'status' => 'success',
+                    'data' => array(
+                        'sw' => 1,
+                        'celular' => $celular,
+                        'id_usuario' => $id_usuario
+                    )
+                );
+                
+        ?>
+        <script>
+Swal.fire({
+                title: "Estas seguro de actualizar al contacto??",
+                //text: "Estas seguro de proceder con la actualizacion!",
+                showDenyButton: true,
+                confirmButtonText: "Aceptar",
+                denyButtonText: `Cancelar`
+                }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    Swal.fire("Correcto", "", "success");
+                   $.ajax({
+                                    type: "POST",
+                                    url: "update_validate.php",
+                                    data: { 
+                                        data: JSON.stringify({$response})
+                                    },
+                                    contentType: 'application/json', 
+                                    dataType: 'json',
+                                    success: function(response){
+                                        console.log(response);
+                                    }                                    
+                                  });
+
+                  /*$sql = $pdo->prepare('UPDATE tb_contactos
+                  SET celular = :celular,
+                  updated_at = :updated_at
+                  WHERE celular = :celular  and id_usuario_fk = :id_contacto');
+           $sql->bindParam(':celular', $celular);
+           $sql->bindParam(':updated_at',date('Y-m-d H:i:s'));
+           //$sql->bindParam(':celularobt', $celular_obt);
+           $sql->bindParam(':id_contacto', $id_usuario);
+       $sql->execute();*/
+
+     //window.location.reload();
+                } else if (result.isDenied) {
+                    Swal.fire("Los cambios no fueron efectuados", "", "info");
+                    window.location.reload();
+                }
+                });
+
+        </script>
+        <?php
+        //este codigo incluir
+        
     }
             //}
         }
